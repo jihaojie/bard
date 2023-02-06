@@ -1,0 +1,6 @@
+apiVersion: virtualbox.tiantian.cn/v1
+kind: Virtualbox
+metadata:
+  name: virtualbox-sample
+spec:
+  # TODO(user): Add fields here

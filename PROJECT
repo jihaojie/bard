@@ -1,0 +1,16 @@
+domain: tiantian.cn
+layout:
+- go.kubebuilder.io/v3
+projectName: bard
+repo: github.com/jihaojie/bard
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: tiantian.cn
+  group: virtualbox
+  kind: Virtualbox
+  path: github.com/jihaojie/bard/api/v1
+  version: v1
+version: "3"
