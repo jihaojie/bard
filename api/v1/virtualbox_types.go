@@ -34,6 +34,7 @@ const (
 	BoxStatusRunning BoxStatus = "Running"
 	BoxStatusError   BoxStatus = "Error"
 	BoxStatusUnknown BoxStatus = "Unknown"
+	BoxStatusStopped BoxStatus = "Stopped"
 
 	DiskTypeHost DiskType = "Host"
 	DiskTypeCeph DiskType = "Ceph"
