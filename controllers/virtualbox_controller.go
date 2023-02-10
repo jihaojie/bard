@@ -18,13 +18,12 @@ package controllers
 
 import (
 	"context"
-
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	virtualboxv1 "github.com/jihaojie/bard/api/v1"
+	v1beta1 "github.com/jihaojie/bard/api/v1"
 )
 
 // VirtualboxReconciler reconciles a Virtualbox object
@@ -47,9 +46,29 @@ type VirtualboxReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.12.2/pkg/reconcile
 func (r *VirtualboxReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	rLog := log.FromContext(ctx)
+	rLog.Info("VirtualBox start Reconciling.")
 
-	// TODO(user): your logic here
+	var virtualBox v1beta1.Virtualbox
+
+	if err := r.Client.Get(ctx, req.NamespacedName, &virtualBox); err != nil {
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	//如果标记了删除 就不做处理.
+	if virtualBox.DeletionTimestamp != nil {
+		return ctrl.Result{}, nil
+	}
+
+	//调谐Pod 试一把
+	handle := Handler{Client: r.Client}
+
+	change, err := handle.CreateOrUpdateStatefulSet(ctx, req, &virtualBox)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	rLog.Info("CreateOrUpdate StatefulSet Finished.", "change", change)
 
 	return ctrl.Result{}, nil
 }
@@ -57,6 +76,6 @@ func (r *VirtualboxReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 // SetupWithManager sets up the controller with the Manager.
 func (r *VirtualboxReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&virtualboxv1.Virtualbox{}).
+		For(&v1beta1.Virtualbox{}).
 		Complete(r)
 }
