@@ -4,10 +4,10 @@ metadata:
   name: virtualbox-sample
   namespace: jihaojie
 spec:
-  boxType: default
-  memory: 100Mi
-  cpu: "1"
   size: 2
-  diskType: Host
+  boxType: default
+  cpu: 1
+  memory: 100Mi
+  diskType: NFS
   diskSize: 100Mi
 

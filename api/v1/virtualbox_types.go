@@ -47,11 +47,11 @@ type VirtualboxSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 	BoxType BoxType `json:"boxType"` //虚拟环境类型
 	Size    *int32  `json:"size"`    //开几个虚拟机实例
-	Memory  string  `json:"memory"`  //内存大小 Mi
-	CPU     string  `json:"cpu"`     //CPU大小 Gi
+	Memory  string  `json:"memory"`  //内存大小
+	CPU     int     `json:"cpu"`     //CPU大小
 
 	DiskType DiskType `json:"diskType"` //存储类型
-	DiskSize string   `json:"diskSize"` //存储大小 Gi
+	DiskSize string   `json:"diskSize"` //存储大小
 
 	//TODO:考虑计费属性字段
 }

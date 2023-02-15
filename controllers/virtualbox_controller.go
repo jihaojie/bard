@@ -35,6 +35,8 @@ type VirtualboxReconciler struct {
 //+kubebuilder:rbac:groups=virtualbox.tiantian.cn,resources=virtualboxes,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=virtualbox.tiantian.cn,resources=virtualboxes/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=virtualbox.tiantian.cn,resources=virtualboxes/finalizers,verbs=update
+//+kubebuilder:rbac:groups="app",resources=statefulsets,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups="",resources=pods,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -60,17 +62,21 @@ func (r *VirtualboxReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		return ctrl.Result{}, nil
 	}
 
-	//调谐Pod 试一把
 	handle := Handler{Client: r.Client}
 
-	change, err := handle.CreateOrUpdateStatefulSet(ctx, req, &virtualBox)
+	stsChange, err := handle.CreateOrUpdateStatefulSet(ctx, req, &virtualBox)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
+	rLog.Info("CreateOrUpdate StatefulSet Finished.", "change", stsChange)
 
-	rLog.Info("CreateOrUpdate StatefulSet Finished.", "change", change)
+	scChange, err := handle.CreateStorageClass(ctx, req, &virtualBox)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	rLog.Info("CreateIfNotExist StorageClass Finished.", "change", scChange)
 
-	return ctrl.Result{}, nil
+	return ctrl.Result{}, err
 }
 
 // SetupWithManager sets up the controller with the Manager.
